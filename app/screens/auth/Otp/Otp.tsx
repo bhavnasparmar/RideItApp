@@ -19,6 +19,7 @@ import {styles} from './OtpStyle';
 import {showToast} from '../../../services/toastService';
 import {toastTypes} from '../../../constant/constants';
 
+
 const Otp = ({route}: any) => {
   const {colors}: any = React.useContext(AppearanceContext);
   const navigation: any = useNavigation();
