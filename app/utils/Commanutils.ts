@@ -1,3 +1,5 @@
+import { tokenExpiredToggle } from "../Redux/Actions/TokenAction";
+import { store } from "../Redux/Store";
 
 //live server base url
 export const API_URL = 'http://54.145.168.143:8080/';
@@ -21,4 +23,11 @@ export const REGEX = {
   specialCharacter: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/,
   usernametest: /^[a-zA-Z0-9]+$/,
   name: /^[a-zA-Z0-9 ]*$/,
+};
+
+
+export const tokenExpiredflagChange = async (data: any) => {
+  // console.log(" ", data)
+  //  Store.dispatch(tokenExpiredToggle(data))
+  store.dispatch(tokenExpiredToggle(data));
 };

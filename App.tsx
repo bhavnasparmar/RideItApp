@@ -2,7 +2,7 @@
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React, {useState} from 'react';
-import {Appearance, NativeModules} from 'react-native';
+import {Appearance, NativeModules, SafeAreaView} from 'react-native';
 import {AppearanceContext} from './app/context/appearanceContext';
 import {AuthContext} from './app/context/AuthContext';
 import Login from './app/screens/auth/login/login';
@@ -19,8 +19,9 @@ import {showToast} from './app/services/toastService';
 import {toastTypes} from './app/constant/constants';
 import Otp from './app/screens/auth/Otp/Otp';
 import 'react-native-gesture-handler';
-
-
+import {Provider} from 'react-redux';
+import {persistor, store} from './app/Redux/Store';
+import {PersistGate} from 'redux-persist/integration/react';
 
 const {RootCheckModule} = NativeModules;
 const RootStack = createNativeStackNavigator();
@@ -233,29 +234,35 @@ export default function App() {
   return (
     <>
       {/* <SafeAreaView style={{flex: 1}}> */}
-      <AuthContext.Provider value={authContext}>
-        <AppearanceContext.Provider
-          value={{
-            colors: mode == LIGHT ? colors : darkColors,
-            setloginnavigation,
-            loginnavigation,
-          }}>
-          <NavigationContainer
-            theme={mode === LIGHT ? _LightTheme : _DarkTheme}>
-            <RootStack.Navigator screenOptions={options}>
-              {/* <RootStack.Screen name="Auth" component={authstack} /> */}
-              {!state?.userToken != null ? (
-                <RootStack.Screen name="App" component={SideDrawer} />
-              ) : (
-                <RootStack.Screen name="Auth" component={authstack} />
-              )}
+      <SafeAreaView style={{flex: 1, backgroundColor: '#FFFFFF'}}>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <AuthContext.Provider value={authContext}>
+              <AppearanceContext.Provider
+                value={{
+                  colors: mode == LIGHT ? colors : darkColors,
+                  setloginnavigation,
+                  loginnavigation,
+                }}>
+                <NavigationContainer
+                  theme={mode === LIGHT ? _LightTheme : _DarkTheme}>
+                  <RootStack.Navigator screenOptions={options}>
+                    {/* <RootStack.Screen name="Auth" component={authstack} /> */}
+                    {state?.userToken != null ? (
+                      <RootStack.Screen name="App" component={SideDrawer} />
+                    ) : (
+                      <RootStack.Screen name="Auth" component={authstack} />
+                    )}
 
-              {/* <RootStack.Screen name="App" component={SideDrawer} /> */}
-            </RootStack.Navigator>
-          </NavigationContainer>
-        </AppearanceContext.Provider>
-      </AuthContext.Provider>
-      <Toast config={toastConfig} />
+                    {/* <RootStack.Screen name="App" component={SideDrawer} /> */}
+                  </RootStack.Navigator>
+                </NavigationContainer>
+              </AppearanceContext.Provider>
+            </AuthContext.Provider>
+            <Toast config={toastConfig} />
+          </PersistGate>
+        </Provider>
+      </SafeAreaView>
     </>
   );
 }
