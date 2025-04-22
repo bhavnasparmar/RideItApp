@@ -32,16 +32,21 @@ import { showToast } from '../../../services/toastService';
 
 const Login = () => {
   const navigation: any = useNavigation();
-  const {colors}: any = React.useContext(AppearanceContext);
+  const { colors }: any = React.useContext(AppearanceContext);
   const [mobileError, setMobileError] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const isFocused: any = useIsFocused();
   const [regexMobileError, setregexMobileError] = useState<boolean>(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
+  // const [validateflag, setvalidateflag] = useState<boolean>(false);
+  const [userInput, setUserInput] = useState('');
+  const [inputError, setInputError] = useState<string | null>(null);
   const [Form, setForm] = useState({
-    mobileNo: '',
+    mobile_number: '',
     password: '',
   });
+
+
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
@@ -60,7 +65,62 @@ const Login = () => {
       keyboardDidHideListener.remove();
     };
   }, []);
-  useEffect(() => {}, [isFocused]);
+  useEffect(() => { }, [isFocused]);
+
+  const validateEmailOrMobile = (input: string): { isValid: boolean; errorMessage: string | null } => {
+    const trimmedInput = input.trim();
+  
+    if (!trimmedInput) {
+      return { isValid: false, errorMessage: 'Please enter email or mobile number' };
+    }
+  
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const mobileRegex = /^[0-9]{10}$/;
+  
+    if (emailRegex.test(trimmedInput)) {
+      return { isValid: true, errorMessage: null };
+    }
+  
+    if (mobileRegex.test(trimmedInput)) {
+      return { isValid: true, errorMessage: null };
+    }
+  
+    return { isValid: false, errorMessage: 'Enter a valid email or  mobile number' };
+  };
+  
+  const handleChange = (name: string, value: string) => {
+    setForm(prevForm => ({
+      ...prevForm,
+      [name]: value,
+    }));
+  };
+
+  // const validate = async () => {
+  //   Keyboard.dismiss();
+  //   const value = Form.mobile_number.trim();
+
+  //   if (!value) {
+  //     setMobileError(true);
+  //     setregexMobileError(false);
+  //     setInputError('Please enter Phone number or Email');
+  //     return;
+  //   }
+
+  //   const { isValid, errorMessage } = validateEmailOrMobile(value);
+
+  //   if (!isValid) {
+  //     setregexMobileError(true);
+  //     setMobileError(false);
+  //     setInputError(errorMessage ?? 'Invalid input');
+  //     return;
+  //   }
+
+  //   // All good
+  //   setMobileError(false);
+  //   setregexMobileError(false);
+  //   setInputError(null);
+  //   setvalidateflag(true);
+  // };
 
 
   return (
@@ -68,16 +128,16 @@ const Login = () => {
       <Container
         Xcenter
         itemPosition="center"
-        /*  contentStyles={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          minHeight:
-            Platform.OS === 'ios'
-              ? responsiveHeight(90)
-              : keyboardHeight === 0
-                ? responsiveHeight(99)
-                :responsiveHeight(99),
-        }} */
+      /*  contentStyles={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        minHeight:
+          Platform.OS === 'ios'
+            ? responsiveHeight(90)
+            : keyboardHeight === 0
+              ? responsiveHeight(99)
+              :responsiveHeight(99),
+      }} */
       >
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'height' : 'height'}
@@ -88,15 +148,15 @@ const Login = () => {
                 keyboardHeight === 0
                   ? 0
                   : Platform.OS === 'ios'
-                  ? responsiveHeight(40)
-                  : '10%',
+                    ? responsiveHeight(40)
+                    : '10%',
             }}>
             {/* <Container Xcenter Ycenter> */}
 
             <Wrapper
               row
               justify="apart"
-              customStyles={{paddingHorizontal: responsiveWidth(0)}}>
+              customStyles={{ paddingHorizontal: responsiveWidth(0) }}>
               {/* <IonIcon color={colors.black} name="chevron-back-outline" size={25} onPress={() => { setloginnavigation(false) }} />
                             <Wrapper justify="center">
                                 <TouchableOpacity onPress={() => { setloginnavigation(false) }}>
@@ -135,29 +195,29 @@ const Login = () => {
               row
               justify="center"
               width={responsiveWidth(90)}>
+              
               <InputField
-                preffixIcon={'person-outline'}
-                value={Form.mobileNo}
-                textColor={colors.black}
-                onChangeText={val => {
-                  if (val) {
-                    setMobileError(false);
-                    setregexMobileError(false);
-                  }
-                  setForm({...Form,mobileNo: val});
-                }}
-                keyboardType="number-pad"
-                maxLength={10}
-                error={
-                  mobileError
-                    ? 'Mobile number required'
-                    : regexMobileError
-                    ? 'Mobile number invalid'
-                    : ''
-                }
-                cursorColor={colors.black}
-                placeholder="Mobile/Email"
+         preffixIcon={'person-outline'}
+         value={Form.mobile_number}
+         textColor={colors.black}
+         editable={true}
+         suffixIcon={null}
+         onChangeText={(val) => {
+           setMobileError(false);
+           setregexMobileError(false);
+           handleChange('mobile_number', val);
+         }}
+         keyboardType={
+           /^[0-9]+$/.test(Form.mobile_number) ? 'number-pad' : 'email-address'
+         }
+         maxLength={/^\d+$/.test(Form.mobile_number) ? 10 : undefined}
+         autoCapitalize="none"
+         autoCorrect={false}
+         cursorColor={colors.black}
+         placeholder="Mobile/Email"
+         error={inputError}
               />
+
             </Wrapper>
             {/* <Spacer y="XS" />
             <Wrapper
@@ -168,14 +228,14 @@ const Login = () => {
               <InputField
                 preffixIcon={'lock-closed-outline'}
                 suffixIcon={'eye-outline'}
-                value={Form.mobileNo}
+                value={Form.mobile_number}
                 textColor={colors.black}
                 onChangeText={val => {
                   if (val) {
                     setMobileError(false);
                     setregexMobileError(false);
                   }
-                  setForm({...Form, mobileNo: val});
+                  setForm({...Form, mobile_number: val});
                 }}
                 keyboardType="number-pad"
                 maxLength={10}
@@ -203,7 +263,7 @@ const Login = () => {
                 />
               </Wrapper>
               <Wrapper>
-                <TouchableOpacity onPress={() => {}}>
+                {/* <TouchableOpacity onPress={() => { }}>
                   <CusText
                     text={'Forget password?'}
                     color={colors.secondary}
@@ -211,7 +271,7 @@ const Login = () => {
                     position="center"
                     title
                   />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </Wrapper>
             </Wrapper>
             <Spacer y="N" />
@@ -225,15 +285,33 @@ const Login = () => {
                 width={responsiveWidth(90)}
                 title="Sign In"
                 textcolor={colors.white}
-                onPress={() => {}}
+                onPress={() => {
+                  Keyboard.dismiss();
+                  const userInput = Form.mobile_number;
+              
+                  const { isValid, errorMessage } = validateEmailOrMobile(userInput);
+              
+                  if (!isValid) {
+                    setMobileError(true);
+                    setInputError(errorMessage ?? null);
+                  } else {
+                    setMobileError(false);
+                    setInputError(null);
+              
+                    console.log("✅ Input is valid:", userInput);
+              
+                    // 🔥 Yaha login API call karo
+                    // loginWithEmailOrMobile(userInput);
+                  }
+                }}
               />
             </Wrapper>
             <Spacer y="N" />
             <Wrapper
-    color={colors.white}
+              color={colors.white}
               row
               align="center"
-              customStyles={{borderTopWidth: 2, borderColor: colors.border}}
+              customStyles={{ borderTopWidth: 2, borderColor: colors.border }}
               justify="center">
               <Wrapper
                 customStyles={{
@@ -260,7 +338,7 @@ const Login = () => {
                 />
               </Wrapper>
               <Wrapper
-              color={colors.white}
+                color={colors.white}
                 row
                 justify="center"
                 align="center"
@@ -289,7 +367,7 @@ const Login = () => {
           />
         </Wrapper>
       </Wrapper>
-      <Spacer y="XXS" />
+      <Spacer y="N" />
       {/* </Container> */}
     </>
   );
