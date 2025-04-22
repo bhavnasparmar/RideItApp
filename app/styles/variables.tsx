@@ -202,7 +202,7 @@ const colors: any = {
   inputLabel: reptativeColors.black,
   inputValue: reptativeColors.white,
   inputText: reptativeColors.white,
-  inputPlaceholder: reptativeColors.black,
+  inputPlaceholder: reptativeColors.placeholderColor,
   inputDisable: reptativeColors.white,
   inputCursor: reptativeColors.black,
   inputBorder: reptativeColors.primary,

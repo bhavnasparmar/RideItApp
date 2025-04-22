@@ -9,6 +9,7 @@ import IonIcon from 'react-native-vector-icons/Ionicons';
 import {AppearanceContext} from '../../context/appearanceContext';
 
 import {
+  borderRadius,
   fontFamily,
   fontSize,
   isIpad,
@@ -75,49 +76,63 @@ const Tabs = ({route}: any) => {
       width: '100%',
     },
   };
-
-  const TabView = ({focused, source, page, type}: any) => {
+  const TabView = ({focused, source, page, type, isCenter}: any) => {
     return (
-      <>
+      <Wrapper
+        justify="center"
+        align="center"
+        width={responsiveWidth(20)}
+        customStyles={{
+          marginTop: focused ? -responsiveWidth(15) : 0,
+          backgroundColor: focused ? colors.orange : 'transparent',
+          height: focused ? responsiveWidth(15) : undefined,
+          width: focused ? responsiveWidth(15) : undefined,
+          borderRadius: focused ? responsiveWidth(10) : 0,
+          shadowColor: '#000',
+          shadowOffset: {width: 0, height: 4},
+          shadowOpacity: 0.3,
+          shadowRadius: 4.65,
+          elevation: focused ? 8 : 0,
+        }}>
         <Wrapper
-          justify="center"
-          align="center"
-          width={responsiveWidth(20)}
-          customStyles={{}}>
-          <Wrapper row customStyles={{position: 'relative', zIndex: 0}}>
-            {type === 'image' ? (
-              <Image
-                source={source}
-                resizeMode="contain"
-                style={{
-                  tintColor:
-                    focused && tabIndex >= 0 ? null : colors.inputLabel,
-                  height: responsiveWidth(8),
-                  width: responsiveWidth(8),
-                }}
-              />
-            ) : (
-              <IonIcon
-                name={source}
-                style={{
-                  color:
-                    focused && tabIndex >= 0 ? colors.Hard_White : colors.gray,
-                  fontSize: isIpad() ? responsiveWidth(4) : 22,
-                  width: '100%',
-                }}
-              />
-            )}
-          </Wrapper>
-          <CusText
-            position="center"
-            color={
-              focused && tabIndex >= 0 ? colors.primary1 : colors.inputLabel
-            }
-            customStyles={{}}
-            text={page}
-          />
+          row
+          customStyles={{
+            position: 'relative',
+            zIndex: 0,
+            right: responsiveWidth(-1),
+            top: responsiveWidth(focused ? 1.5 : 0),
+          }}>
+          {type === 'image' ? (
+            <Image
+              source={source}
+              resizeMode="contain"
+              style={{
+                tintColor: focused && tabIndex >= 0 ? null : colors.inputLabel,
+                height: responsiveWidth(8),
+                width: responsiveWidth(8),
+              }}
+            />
+          ) : (
+            <IonIcon
+              name={source}
+              style={{
+                color:
+                  focused && tabIndex >= 0 ? colors.Hard_White : colors.gray,
+                fontSize: isIpad() ? responsiveWidth(4) : fontSize.XL,
+                width: responsiveWidth(8),
+                height: responsiveWidth(8),
+              }}
+            />
+          )}
         </Wrapper>
-      </>
+        {focused ? (
+          <Wrapper
+            customStyles={{top: responsiveWidth(7), zIndex: 10,borderRadius : borderRadius.ring}}
+            color={colors.orange}
+            width={responsiveWidth(5)}
+            height={responsiveWidth(2)}></Wrapper>
+        ) : null}
+      </Wrapper>
     );
   };
 
@@ -146,8 +161,56 @@ const Tabs = ({route}: any) => {
               <TabView
                 page="Dashboard"
                 focused={focused}
-                source={require('../../assets/Images/wifi.png')}
-                type={'image'}
+                source={'home'}
+                type="icon"
+                isCenter={false}
+              />
+            ),
+          }}
+        />
+
+        <Tab.Screen
+          name="Center"
+          component={Dashboard}
+          options={{
+            tabBarIcon: ({focused}: any) => (
+              <TabView
+                page=""
+                focused={focused}
+                source={'person'}
+                type="icon"
+                isCenter={true} // The center button
+              />
+            ),
+          }}
+        />
+
+        <Tab.Screen
+          name="Chat"
+          component={Dashboard}
+          options={{
+            tabBarIcon: ({focused}: any) => (
+              <TabView
+                page="Chat"
+                focused={focused}
+                source="chatbubble"
+                type="icon"
+                isCenter={false}
+              />
+            ),
+          }}
+        />
+          <Tab.Screen
+          name="route"
+          component={Dashboard}
+          options={{
+            tabBarIcon: ({focused}: any) => (
+              <TabView
+                page="Chat"
+                focused={focused}
+                source="bicycle"
+                type="icon"
+                isCenter={false}
               />
             ),
           }}
