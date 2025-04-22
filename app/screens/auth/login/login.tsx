@@ -42,8 +42,8 @@ const Login = () => {
   const [userInput, setUserInput] = useState('');
   const [inputError, setInputError] = useState<string | null>(null);
   const [Form, setForm] = useState({
-    mobile_number: '',
-    password: '',
+    contact: '',
+    // password: '',
   });
 
 
@@ -68,7 +68,8 @@ const Login = () => {
   useEffect(() => { }, [isFocused]);
 
   const validateEmailOrMobile = (input: string): { isValid: boolean; errorMessage: string | null } => {
-    const trimmedInput = input.trim();
+    // const trimmedInput = input.trim();
+    const trimmedInput = (input ?? '').trim();
   
     if (!trimmedInput) {
       return { isValid: false, errorMessage: 'Please enter email or mobile number' };
@@ -198,19 +199,19 @@ const Login = () => {
               
               <InputField
          preffixIcon={'person-outline'}
-         value={Form.mobile_number}
+         value={Form.contact}
          textColor={colors.black}
          editable={true}
          suffixIcon={null}
          onChangeText={(val) => {
            setMobileError(false);
            setregexMobileError(false);
-           handleChange('mobile_number', val);
+           handleChange('contact', val);
          }}
          keyboardType={
-           /^[0-9]+$/.test(Form.mobile_number) ? 'number-pad' : 'email-address'
+           /^[0-9]+$/.test(Form.contact) ? 'number-pad' : 'email-address'
          }
-         maxLength={/^\d+$/.test(Form.mobile_number) ? 10 : undefined}
+         maxLength={/^\d+$/.test(Form.contact) ? 10 : undefined}
          autoCapitalize="none"
          autoCorrect={false}
          cursorColor={colors.black}
@@ -287,7 +288,7 @@ const Login = () => {
                 textcolor={colors.white}
                 onPress={() => {
                   Keyboard.dismiss();
-                  const userInput = Form.mobile_number;
+                  const userInput = Form.contact;
               
                   const { isValid, errorMessage } = validateEmailOrMobile(userInput);
               
@@ -298,10 +299,7 @@ const Login = () => {
                     setMobileError(false);
                     setInputError(null);
               
-                    console.log("✅ Input is valid:", userInput);
-              
-                    // 🔥 Yaha login API call karo
-                    // loginWithEmailOrMobile(userInput);
+                    console.log("Input is valid:", userInput);
                   }
                 }}
               />
