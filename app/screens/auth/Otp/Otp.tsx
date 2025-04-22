@@ -19,7 +19,6 @@ import {styles} from './OtpStyle';
 import {showToast} from '../../../services/toastService';
 import {toastTypes} from '../../../constant/constants';
 
-
 const Otp = ({route}: any) => {
   const {colors}: any = React.useContext(AppearanceContext);
   const navigation: any = useNavigation();
@@ -29,12 +28,16 @@ const Otp = ({route}: any) => {
     inputfeild2: '',
     inputfeild3: '',
     inputfeild4: '',
+    inputfeild5: '',
+    inputfeild6: '',
   });
 
   const input1: any = useRef();
   const input2: any = useRef();
   const input3: any = useRef();
   const input4: any = useRef();
+  const input5: any = useRef();
+  const input6: any = useRef();
 
   const [inputError, setInputError] = useState(false);
   const [inputError2, setInputError2] = useState(false);
@@ -56,6 +59,8 @@ const Otp = ({route}: any) => {
           inputfeild2: '',
           inputfeild3: '',
           inputfeild4: '',
+          inputfeild5: '',
+          inputfeild6: '',
         });
       };
     }, [isFocused]),
@@ -102,15 +107,16 @@ const Otp = ({route}: any) => {
             <Spacer y="N" />
 
             <Wrapper row justify="spEven" width={responsiveWidth(100)}>
+            
               <InputField
                 textColor={colors.black}
                 label=""
-                placeholder=""
+                placeholder="*"
                 keyboardType="numeric"
                 value={Form.inputfeild1}
                 maxLength={1}
                 bordered={true}
-                width={55}
+                width={45}
                 textAlign={'center'}
                 ref={input1}
                 onKeyPress={e => {
@@ -129,14 +135,14 @@ const Otp = ({route}: any) => {
               />
 
               <InputField
+               textColor={colors.black}
                 label=""
-                textColor={colors.black}
-                placeholder=""
+               placeholder="*"
                 value={Form.inputfeild2}
                 maxLength={1}
                 keyboardType="numeric"
                 bordered={true}
-                width={55}
+                width={45}
                 textAlign={'center'}
                 ref={input2}
                 onKeyPress={e => {
@@ -154,14 +160,14 @@ const Otp = ({route}: any) => {
                 textContentType="oneTimeCode"
               />
               <InputField
-                textColor={colors.black}
+               textColor={colors.black}
                 label=""
-                placeholder=""
+                placeholder="*"
                 keyboardType="numeric"
                 value={Form.inputfeild3}
                 maxLength={1}
                 bordered={true}
-                width={55}
+                width={45}
                 textAlign={'center'}
                 ref={input3}
                 onKeyPress={e => {
@@ -179,18 +185,18 @@ const Otp = ({route}: any) => {
                 textContentType="oneTimeCode"
               />
               <InputField
-                textColor={colors.black}
+               textColor={colors.black}
                 label=""
-                placeholder=""
+               placeholder="*"
                 keyboardType="numeric"
                 value={Form.inputfeild4}
                 maxLength={1}
                 bordered={true}
-                width={55}
+                width={45}
                 textAlign={'center'}
                 ref={input4}
                 onKeyPress={e => {
-                  inputKeyPress(e, input3, '', 'inputfeild4');
+                  inputKeyPress(e, input3, input5, 'inputfeild4');
                 }}
                 onChangeText={value => {
                   if (value) {
@@ -199,6 +205,56 @@ const Otp = ({route}: any) => {
                   setForm({
                     ...Form,
                     inputfeild4: value != '.' && value != '-' ? value : '',
+                  });
+                }}
+                textContentType="oneTimeCode"
+              />
+              <InputField
+               textColor={colors.black}
+                label=""
+                placeholder="*"
+                keyboardType="numeric"
+                value={Form.inputfeild5}
+                maxLength={1}
+                bordered={true}
+                width={45}
+                textAlign={'center'}
+                ref={input5}
+                onKeyPress={e => {
+                  inputKeyPress(e, input4, input6, 'inputfeild5');
+                }}
+                onChangeText={value => {
+                  if (value) {
+                    setInputError(false);
+                  }
+                  setForm({
+                    ...Form,
+                    inputfeild5: value != '.' && value != '-' ? value : '',
+                  });
+                }}
+                textContentType="oneTimeCode"
+              />
+              <InputField
+               textColor={colors.black}
+                label=""
+                placeholder="*"
+                keyboardType="numeric"
+                value={Form.inputfeild6}
+                maxLength={1}
+                bordered={true}
+                width={45}
+                textAlign={'center'}
+                ref={input6}
+                onKeyPress={e => {
+                  inputKeyPress(e, input5, '', 'inputfeild6');
+                }}
+                onChangeText={value => {
+                  if (value) {
+                    setInputError(false);
+                  }
+                  setForm({
+                    ...Form,
+                    inputfeild6: value != '.' && value != '-' ? value : '',
                   });
                 }}
                 textContentType="oneTimeCode"
@@ -225,7 +281,7 @@ const Otp = ({route}: any) => {
           </>
         ) : null}
 
-        <Wrapper row justify="right" width={responsiveWidth(90)}>
+        <Wrapper row justify="right" width={responsiveWidth(96)}>
           <Wrapper>
             <TouchableOpacity onPress={() => {}}>
               <CusText
@@ -270,9 +326,10 @@ const Otp = ({route}: any) => {
         <Spacer y="L" />
         <Wrapper row justify="center">
           <Wrapper>
-            <TouchableOpacity onPress={() => {
-                   navigation.navigate('Login');
-            }}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('Login');
+              }}>
               <CusText
                 text={'Back To Login'}
                 color={colors.black}

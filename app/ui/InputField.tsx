@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     color: colors.black,
     fontFamily: fontFamily.regular,
-    fontSize: fontSize.middleSmall,
+    fontSize: fontSize.semiNormal,
     minHeight: responsiveWidth(9),
   },
 });
