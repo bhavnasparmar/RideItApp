@@ -70,6 +70,7 @@ const Login = () => {
   const validateEmailOrMobile = (input: string): { isValid: boolean; errorMessage: string | null } => {
     // const trimmedInput = input.trim();
     const trimmedInput = (input ?? '').trim();
+    
   
     if (!trimmedInput) {
       return { isValid: false, errorMessage: 'Please enter email or mobile number' };
