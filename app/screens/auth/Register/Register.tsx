@@ -24,16 +24,25 @@ import { styles } from './RegisterStyle';
 
 const Register = () => {
   const navigation: any = useNavigation();
-    const {colors}: any = React.useContext(AppearanceContext);
-  
+  const { colors }: any = React.useContext(AppearanceContext);
+
   const [mobileError, setMobileError] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const isFocused: any = useIsFocused();
   const [regexMobileError, setregexMobileError] = useState<boolean>(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [nameError, setNameError] = useState(false);
+  const [inputError, setInputError] = useState<string | null>(null);
+  // const [Form, setForm] = useState({
+  //   name: '',
+  //   mobile_number: '',
+  // });
+
   const [Form, setForm] = useState({
-    mobileNo: '',
-    password: '',
+    name: '',
+    contact: '',
+    email: '',
+    mobile: '',
   });
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -53,43 +62,111 @@ const Register = () => {
       keyboardDidHideListener.remove();
     };
   }, []);
-  useEffect(() => {}, [isFocused]);
+  useEffect(() => { }, [isFocused]);
+
+  const validateForm = () => {
+    let isValid = true;
+
+    if (!Form.name.trim()) {
+      setNameError(true);
+      isValid = false;
+    }
+
+    const { isValid: mobileValid, errorMessage } = validateEmailOrMobile(Form.contact);
+    if (!mobileValid) {
+      setInputError(errorMessage);
+      isValid = false;
+    }
+
+    return isValid;
+  };
+
+
+  const validateEmailOrMobile = (input: string): { isValid: boolean; errorMessage: string | null } => {
+    // const trimmedInput = input.trim();
+    const trimmedInput = (input ?? '').trim();
+
+    if (!trimmedInput) {
+      return { isValid: false, errorMessage: 'Please enter email or mobile number' };
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const mobileRegex = /^[0-9]{10}$/;
+
+    if (emailRegex.test(trimmedInput)) {
+      return { isValid: true, errorMessage: null };
+    }
+
+    if (mobileRegex.test(trimmedInput)) {
+      return { isValid: true, errorMessage: null };
+    }
+
+    return { isValid: false, errorMessage: 'Enter a valid email or  mobile number' };
+  };
+
+  const handleChange = (name: string, value: string) => {
+    let updatedForm = {
+      ...Form,
+      [name]: value,
+    };
+
+    if (name === 'contact') {
+      // const trimmed = value.trim();
+      const trimmed = (value ?? '').trim(); 
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const mobileRegex = /^[0-9]{10}$/;
+
+      if (emailRegex.test(trimmed)) {
+        updatedForm.email = trimmed;
+        updatedForm.mobile = '';
+      } else if (mobileRegex.test(trimmed)) {
+        updatedForm.mobile = trimmed;
+        updatedForm.email = '';
+      } else {
+        updatedForm.email = '';
+        updatedForm.mobile = '';
+      }
+    }
+
+    setForm(updatedForm);
+  };
+
 
   return (
     <>
       <Container
         Xcenter
         itemPosition="center"
-        /*  contentStyles={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          minHeight:
-            Platform.OS === 'ios'
-              ? responsiveHeight(90)
-              : keyboardHeight === 0
-                ? responsiveHeight(99)
-                :responsiveHeight(99),
-        }} */
+      /*  contentStyles={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        minHeight:
+          Platform.OS === 'ios'
+            ? responsiveHeight(90)
+            : keyboardHeight === 0
+              ? responsiveHeight(99)
+              :responsiveHeight(99),
+      }} */
       >
         <Spacer y="SemiS" />
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'height' : 'height'}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
-            <Wrapper
+          <Wrapper
             customStyles={{
               marginBottom:
                 keyboardHeight === 0
                   ? 0
                   : Platform.OS === 'ios'
-                  ? responsiveHeight(40)
-                  : '10%',
+                    ? responsiveHeight(40)
+                    : '10%',
             }}>
             {/* <Container Xcenter Ycenter> */}
 
             <Wrapper
               row
               justify="apart"
-              customStyles={{paddingHorizontal: responsiveWidth(0)}}>
+              customStyles={{ paddingHorizontal: responsiveWidth(0) }}>
               {/* <IonIcon color={colors.black} name="chevron-back-outline" size={25} onPress={() => { setloginnavigation(false) }} />
                             <Wrapper justify="center">
                                 <TouchableOpacity onPress={() => { setloginnavigation(false) }}>
@@ -113,15 +190,15 @@ const Register = () => {
             <Spacer y="SemiS" />
 
 
-              <CusText
-                text={'Create Your Account'}
-                color={colors.darkGray}
-                size="XL"
-                position="center"
-                title
-                extraBold
-              />
-            
+            <CusText
+              text={'Create Your Account'}
+              color={colors.darkGray}
+              size="XL"
+              position="center"
+              title
+              extraBold
+            />
+
             <Spacer y="S" />
             <Wrapper
               position="center"
@@ -130,24 +207,15 @@ const Register = () => {
               width={responsiveWidth(90)}>
               <InputField
                 preffixIcon={'person-outline'}
-                value={Form.mobileNo}
+                value={Form.name}
                 textColor={colors.black}
                 onChangeText={val => {
-                  if (val) {
-                    setMobileError(false);
-                    setregexMobileError(false);
-                  }
-                  setForm({...Form, mobileNo: val});
+                  setNameError(false);
+                  setForm({ ...Form, name: val });
                 }}
                 keyboardType="number-pad"
                 maxLength={10}
-                error={
-                  mobileError
-                    ? 'Mobile number required'
-                    : regexMobileError
-                    ? 'Mobile number invalid'
-                    : ''
-                }
+                error={nameError ? 'Name is required' : ''}
                 cursorColor={colors.black}
                 placeholder="User Name"
               />
@@ -158,16 +226,16 @@ const Register = () => {
               row
               justify="center"
               width={responsiveWidth(90)}>
-              <InputField
+              {/* <InputField
                 preffixIcon={'mail-outline'}
-                value={Form.mobileNo}
+                value={Form.mobileEmail}
                 textColor={colors.black}
                 onChangeText={val => {
                   if (val) {
                     setMobileError(false);
                     setregexMobileError(false);
                   }
-                  setForm({...Form, mobileNo: val});
+                  setForm({...Form, mobileEmail: val});
                 }}
                 keyboardType="number-pad"
                 maxLength={10}
@@ -180,6 +248,26 @@ const Register = () => {
                 }
                 cursorColor={colors.black}
                 placeholder="Mobile/Email"
+              /> */}
+              <InputField
+                preffixIcon={'mail-outline'}
+                value={Form.contact}
+                textColor={colors.black}
+                editable={true}
+                suffixIcon={null}
+                onChangeText={(val) => {
+                  setMobileError(false);
+                  setregexMobileError(false);
+                  setInputError(null);
+                  handleChange('contact', val);
+                }}
+                keyboardType={/^[0-9]+$/.test(Form.contact) ? 'number-pad' : 'email-address'}
+                maxLength={/^\d+$/.test(Form.contact) ? 10 : undefined}
+                autoCapitalize="none"
+                autoCorrect={false}
+                cursorColor={colors.black}
+                placeholder="Mobile/Email"
+                error={inputError}
               />
             </Wrapper>
             {/* <Spacer y="XS" />
@@ -206,7 +294,16 @@ const Register = () => {
                 title="Get OTP"
                 textcolor={colors.white}
                 onPress={() => {
-                  navigation.navigate('Otp');
+                  // navigation.navigate('Otp');
+
+                  if (validateForm()) {
+                    navigation.navigate('Otp', {
+                      name: Form.name,
+                      contact: Form.contact,
+                      email: Form.email,
+                      mobile: Form.mobile,
+                    });
+                  }
                 }}
               />
             </Wrapper>
@@ -216,7 +313,7 @@ const Register = () => {
             <Wrapper
               row
               align="center"
-              customStyles={{borderTopWidth: 2, borderColor: colors.border}}
+              customStyles={{ borderTopWidth: 2, borderColor: colors.border }}
               justify="center">
               <Wrapper
                 customStyles={{
@@ -272,10 +369,11 @@ const Register = () => {
           />
         </Wrapper>
       </Wrapper>
-      <Spacer y="XXS" />
+      <Spacer y="N" />
       {/* </Container> */}
     </>
   );
 };
+
 
 export default Register;
